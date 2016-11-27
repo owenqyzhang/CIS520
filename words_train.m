@@ -44,11 +44,11 @@ for i = 1: 9
     idx_train = idx;
     idx_train(idx_test) = [];
     Y = full(Y) + 1;
-%     [B_ori, dev_ori, stats_ori] = mnrfit(X(idx_train, :),...
-%         Y(idx_train));
-%     ori_pred = mnrval(B_ori, X(idx_test, :));
-%     Yhat_ori = ori_pred(:, 2) >= 0.5;
-%     precision_ori_log(i) = mean(Yhat_ori == Y(idx_test));
+    [B_ori, dev_ori, stats_ori] = mnrfit(X(idx_train, :),...
+        Y(idx_train));
+    ori_pred = mnrval(B_ori, X(idx_test, :));
+    Yhat_ori = ori_pred(:, 2) >= 0.5;
+    precision_ori_log(i) = mean(Yhat_ori == Y(idx_test));
     [B_pca, dev_pca, stats_pca] = mnrfit(X_pca(idx_train, :),...
         Y(idx_train));
     pca_pred = mnrval(B_pca, X_pca(idx_test, :));
