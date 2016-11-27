@@ -1,9 +1,9 @@
 clear
 clc
 
-load ../data/train_set/words_train.mat
+load ./data/train_set/words_train.mat
 X1 = full(X);
-load ../data/train_set_unlabeled/words_train_unlabeled.mat
+load ./data/train_set_unlabeled/words_train_unlabeled.mat
 X2 = full(X);
 X = [X1; X2];
 load ./models/coeff.mat
