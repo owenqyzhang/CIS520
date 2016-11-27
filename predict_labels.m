@@ -9,4 +9,7 @@ function [Y_hat] = predict_labels(word_counts, cnn_feat, prob_feat, color_feat, 
 %           raw_tweets      nx1 cells containing all the raw tweets in text
 % Outputs:  Y_hat           nx1 predicted labels (1 for joy, 0 for sad)
 
+load 
+Y_hat = ones(size(word_counts, 1), 1);
+
 end
