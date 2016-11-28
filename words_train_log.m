@@ -13,7 +13,7 @@ log_ori = train(full(Y), sparse(X1), ['-s 0', 'col']);
 y_unlabeled_est = predict(ones(4500, 1), sparse(X2), log_ori, ['-q', 'col']);
 Y = [full(Y); y_unlabeled_est];
 log_ori_full = train(full(Y), sparse(X), ['-s 0', 'col']);
-save('./models/log_ori_full.mat', 'log_ori', '-v7.3');
+save('./models/log_ori_full.mat', 'log_ori_full', '-v7.3');
 
 precision_ori_log = zeros(9, 1);
 ind = crossvalind('Kfold', 4500, 10);
