@@ -3,30 +3,30 @@ clc
 
 load ./data/train_set/words_train.mat
 X1 = full(X);
+X1 = [ones(4500, 1), X1];
 load ./data/train_set_unlabeled/words_train_unlabeled.mat
 X2 = full(X);
+X2 = [ones(4500, 1), X2];
 X = [X1; X2];
 
 %% Logistic Regression
-addpath('liblinear/');
-log_ori = train(full(Y), sparse(X1), ['-s 0', 'col']);
-y_unlabeled_est = predict(ones(4500, 1), sparse(X2), log_ori, ['-q', 'col']);
-Y = [full(Y); y_unlabeled_est];
-log_ori_full = train(full(Y), sparse(X), ['-s 0', 'col']);
-save('./models/log_ori_full.mat', 'log_ori_full', '-v7.3');
+initial_w = zeros(size(X, 2), 1);
 
-precision_ori_log = zeros(9, 1);
-ind = crossvalind('Kfold', 4500, 10);
-for i = 1: 10
-    idx = 1: 9000;
-    idx_test = find(ind == i);
-    idx_train = idx;
-    idx_train(idx_test) = [];
-    
-    model = train(full(Y(idx_train)), sparse(X(idx_train, :)),...
-        ['-s 0', 'col']);
-    Yhat = predict(ones(450, 1), sparse(X(idx_test, :)),...
-        model, ['-q', 'col']);
-    precision_ori_log(i) = mean(Yhat == Y(idx_test));
-end
-precision_ori_log_ave = mean(precision_ori_log);
+% lambda = 1: 10;
+% 
+% ind = crossvalind('Kfold', 4500, 10);
+% precision = zeros(10, 1);
+% for i = 1: 10
+%     for j = 1: 10
+%         X_train = X1(ind ~= j, :);
+%         X_test = X1(ind == j, :);
+%         Y_train = Y(ind ~= j);
+%         Y_test = Y(ind == j);
+%         w = gradientDescent(X_train, Y_train, initial_w, 0.01, 1000, lambda(i));
+%         Yhat = predict_log(w, X_test);
+%         precision(i) = precision(i) + mean(Yhat == Y_test);
+%     end
+% end
+% precision = precision ./ 10;
+
+w_labeled = gradientDescent(X1, Y, initial_w, 0.01, 1000, 2);
