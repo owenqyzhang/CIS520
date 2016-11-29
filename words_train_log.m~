@@ -5,7 +5,6 @@ load ./data/train_set/words_train.mat
 X = full(X);
 load ./data/train_set/train_cnn_feat.mat
 X_cnn = train_cnn_feat;
-Y = full(Y);
 
 ind = crossvalind('Kfold', 4500, 10);
 idx = 1: 4500;
@@ -53,21 +52,18 @@ acc_SVM_CNN = mean(Yhat_SVM_CNN == Y_test);
 %% Logistic Regression
 addpath('liblinear/');
 
-logistic = train(Y_train, sparse(X_train), ['-s 0', 'col']);
+logistic = train(Y_train, X_train, ['-s 0', 'col']);
 
-Yhat_train_logistic = predict(ones(4050, 1), sparse(X_train),...
-    logistic, ['-q', 'col']);
+Yhat_train_logistic = predict(ones(4050, 1), X_train, logistic, ['-q', 'col']);
 acc_train_logistic = mean(Yhat_train_logistic == Y_train);
 
-Yhat_logistic = predict(ones(450, 1), sparse(X_test), logistic,...
-    ['-q', 'col']);
+Yhat_logistic = predict(ones(450, 1), X_test, logistic, ['-q', 'col']);
 acc_logistic = mean(Yhat_logistic == Y_test);
 
 %% Majority Vote
 Yhat_train = [Yhat_train_logistic, Yhat_train_NB, Yhat_train_SVM_CNN, Yhat_train_SVM_W];
 Y_train_est = mode(Yhat_train, 2);
-acc_train_vote = mean(Y_train_est == Y_train);
-
+acc_train_vote = mean(Y_train_est == Y_test)
 Yhat = [Yhat_logistic, Yhat_NB, Yhat_SVM_CNN, Yhat_SVM_W];
 Y_est = mode(Yhat, 2);
 acc_vote = mean(Y_est == Y_test);
