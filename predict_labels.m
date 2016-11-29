@@ -9,13 +9,14 @@ function [Y_hat] = predict_labels(word_counts, cnn_feat, prob_feat, color_feat, 
 %           raw_tweets      nx1 cells containing all the raw tweets in text
 % Outputs:  Y_hat           nx1 predicted labels (1 for joy, 0 for sad)
 
-load ./models/ada.mat
+unzip('./models.zip')
+load ./models/ada_compact.mat
 load ./models/coeff.mat
 
 X = full(word_counts);
 
 X_pca = (X - mean(X)) * coeff;
 
-Y_hat = predict(ada, X_pca);
+Y_hat = predict(ada_compact, X_pca);
 
 end
