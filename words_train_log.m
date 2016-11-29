@@ -7,67 +7,97 @@ load ./data/train_set/train_cnn_feat.mat
 X_cnn = train_cnn_feat;
 Y = full(Y);
 
-ind = crossvalind('Kfold', 4500, 10);
-idx = 1: 4500;
-idx_test = find(ind == 1);
-idx_train = idx;
-idx_train(idx_test) = [];
+% ind = crossvalind('Kfold', 4500, 10);
+% idx = 1: 4500;
+% idx_test = find(ind == 1);
+% idx_train = idx;
+% idx_train(idx_test) = [];
 
-X_train = X(idx_train, :);
-X_cnn_train = X_cnn(idx_train, :);
-Y_train = Y(idx_train);
+% X_train = X(idx_train, :);
+% X_cnn_train = X_cnn(idx_train, :);
+% Y_train = Y(idx_train);
 
-X_test = X(idx_test, :);
-X_cnn_test = X_cnn(idx_test, :);
-Y_test = Y(idx_test);
+% X_test = X(idx_test, :);
+% X_cnn_test = X_cnn(idx_test, :);
+% Y_test = Y(idx_test);
 
 %% Naive Bayes
-NB = fitcnb(X_train, Y_train, 'Distribution', 'mn');
+% NB = fitcnb(X_train, Y_train, 'Distribution', 'mn');
 
-Yhat_train_NB = predict(NB, X_train);
-acc_train_NB = mean(Yhat_train_NB == Y_train);
-
-Yhat_NB = predict(NB, X_test);
-acc_NB = mean(Yhat_NB == Y_test);
+% Yhat_train_NB = predict(NB, X_train);
+% acc_train_NB = mean(Yhat_train_NB == Y_train);
+% 
+% Yhat_NB = predict(NB, X_test);
+% acc_NB = mean(Yhat_NB == Y_test);
 
 %% SVM Word Count
-SVM_W = fitcsvm(X_train, Y_train, 'KernelFunction', 'rbf',...
-    'Standardize', true, 'KernelScale', 100);
+% SVM_W = fitcsvm(X_train, Y_train, 'KernelFunction', 'rbf',...
+%     'Standardize', true, 'KernelScale', 100);
 
-Yhat_train_SVM_W = predict(SVM_W, X_train);
-acc_train_SVM_W = mean(Yhat_train_SVM_W == Y_train);
-
-Yhat_SVM_W = predict(SVM_W, X_test);
-acc_SVM_W = mean(Yhat_SVM_W == Y_test);
+% Yhat_train_SVM_W = predict(SVM_W, X_train);
+% acc_train_SVM_W = mean(Yhat_train_SVM_W == Y_train);
+% 
+% Yhat_SVM_W = predict(SVM_W, X_test);
+% acc_SVM_W = mean(Yhat_SVM_W == Y_test);
 
 %% SVM CNN
-SVM_CNN = fitcsvm(X_cnn_train, Y_train, 'KernelFunction', 'rbf',...
-    'Standardize', true, 'KernelScale', 250);
+% SVM_CNN = fitcsvm(X_cnn_train, Y_train, 'KernelFunction', 'rbf',...
+%     'Standardize', true, 'KernelScale', 250);
 
-Yhat_train_SVM_CNN = predict(SVM_CNN, X_cnn_train);
-acc_train_SVM_CNN = mean(Yhat_train_SVM_CNN == Y_train);
+% Yhat_train_SVM_CNN = predict(SVM_CNN, X_cnn_train);
+% acc_train_SVM_CNN = mean(Yhat_train_SVM_CNN == Y_train);
+% 
+% Yhat_SVM_CNN = predict(SVM_CNN, X_cnn_test);
+% acc_SVM_CNN = mean(Yhat_SVM_CNN == Y_test);
 
-Yhat_SVM_CNN = predict(SVM_CNN, X_cnn_test);
-acc_SVM_CNN = mean(Yhat_SVM_CNN == Y_test);
+%% Logistic Regression Liblinear
+% addpath('liblinear/');
 
-%% Logistic Regression
-addpath('liblinear/');
+% logistic = train(Y_train, sparse(X_train), ['-s 0', 'col']);
 
-logistic = train(Y_train, sparse(X_train), ['-s 0', 'col']);
+% Yhat_train_logistic = predict(ones(4050, 1), sparse(X_train),...
+%     logistic, ['-q', 'col']);
+% acc_train_logistic = mean(Yhat_train_logistic == Y_train);
+% 
+% Yhat_logistic = predict(ones(450, 1), sparse(X_test), logistic,...
+%     ['-q', 'col']);
+% acc_logistic = mean(Yhat_logistic == Y_test);
 
-Yhat_train_logistic = predict(ones(4050, 1), sparse(X_train),...
-    logistic, ['-q', 'col']);
-acc_train_logistic = mean(Yhat_train_logistic == Y_train);
+%% Logistic Regression Gradient Descent
+% Xh_train = [ones(4050, 1), X_train];
+% Xh_test = [ones(450, 1), X_test];
 
-Yhat_logistic = predict(ones(450, 1), sparse(X_test), logistic,...
-    ['-q', 'col']);
-acc_logistic = mean(Yhat_logistic == Y_test);
+% initial_w = zeros(size(Xh_train, 2), 1);
+
+% w = gradientDescent(Xh_train, Y_train, initial_w, 0.07, 1000, 2);
+
+% Yhat_train_log_gd = predict_log(w, Xh_train);
+% acc_train_log_gd = mean(Yhat_train_log_gd == Y_train);
+% 
+% Yhat_log_gd = predict_log(w, Xh_test);
+% acc_log_gd = mean(Yhat_log_gd == Y_test);
 
 %% Majority Vote
-Yhat_train = [Yhat_train_logistic, Yhat_train_NB, Yhat_train_SVM_CNN, Yhat_train_SVM_W];
-Y_train_est = mode(Yhat_train, 2);
-acc_train_vote = mean(Y_train_est == Y_train);
+% Yhat_train = [Yhat_train_logistic, Yhat_train_NB, Yhat_train_SVM_CNN, Yhat_train_SVM_W];
+% Y_train_est = mode(Yhat_train, 2);
+% acc_train_vote = mean(Y_train_est == Y_train);
+% 
+% Yhat = [Yhat_logistic, Yhat_NB, Yhat_SVM_CNN, Yhat_SVM_W];
+% Y_est = mode(Yhat, 2);
+% acc_vote = mean(Y_est == Y_test);
 
-Yhat = [Yhat_logistic, Yhat_NB, Yhat_SVM_CNN, Yhat_SVM_W];
-Y_est = mode(Yhat, 2);
-acc_vote = mean(Y_est == Y_test);
+%% Train models with all the data
+NB = fitcnb(X, Y, 'Distribution', 'mn');
+SVM_W = fitcsvm(X, Y, 'KernelFunction', 'rbf',...
+    'Standardize', true, 'KernelScale', 100);
+SVM_CNN = fitcsvm(X_cnn, Y, 'KernelFunction', 'rbf',...
+    'Standardize', true, 'KernelScale', 250);
+
+addpath('liblinear/');
+logistic = train(Y, sparse(X), ['-s 0', 'col']);
+
+Xh = [ones(4500, 1), X];
+
+initial_w = zeros(size(Xh, 2), 1);
+
+w = gradientDescent(Xh, Y, initial_w, 0.07, 1000, 2);
