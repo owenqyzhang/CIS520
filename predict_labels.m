@@ -9,10 +9,21 @@ function [Y_hat] = predict_labels(word_counts, cnn_feat, prob_feat, color_feat, 
 %           raw_tweets      nx1 cells containing all the raw tweets in text
 % Outputs:  Y_hat           nx1 predicted labels (1 for joy, 0 for sad)
 
-load ./models/log_ori_full.mat
-addpath('./liblinear/')
+load ./models/majority_vote_compact.mat
+addpath('liblinear/');
 
-n = size(word_counts, 1);
-Y_hat = predict(ones(n, 1), sparse(word_counts), log_ori_full, ['-q', 'col']);
+X = full(word_counts);
+X_pca = bsxfun(@minus, X, mean(X)) * coeff;
+Xh = [ones(4500, 1), X];
+
+Yhat_boost = predict(boost, X_pca);
+Yhat_knn = predict(KNN, X);
+Yhat_NB = predict(NB, X);
+Yhat_SVM_W = predict(SVM_W, X);
+Yhat_logistic = predict(ones(4500, 1), sparse(X), logistic, ['-q', 'col']);
+Yhat_log_gd = predict_log(w, Xh);
+
+Y_est = [Yhat_logistic, Yhat_NB, Yhat_SVM_W, Yhat_log_gd, Yhat_boost, Yhat_knn];
+Y_hat = mode(Y_est, 2);
 
 end
