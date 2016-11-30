@@ -77,7 +77,7 @@ acc_SVM_W = mean(Yhat_SVM_W == Y_test);
 %% Logistic Regression Liblinear
 addpath('liblinear/');
 
-logistic = train(Y_train, sparse(X_train), ['-s 0', 'col']);
+logistic = train(Y_train, sparse(X_train), ['-s 7', 'col']);
 
 Yhat_train_logistic = predict(ones(4050, 1), sparse(X_train),...
     logistic, ['-q', 'col']);
@@ -104,14 +104,20 @@ acc_log_gd = mean(Yhat_log_gd == Y_test);
 %% Majority Vote
 Yhat_train = [Yhat_train_logistic, Yhat_train_NB, Yhat_train_log_gd,...
     Yhat_train_SVM_W, Yhat_train_boost, Yhat_train_knn];
-Y_train_est = mode(Yhat_train, 2);
-acc_train_vote = mean(Y_train_est == Y_train);
+Y_train_vote_est = mode(Yhat_train, 2);
+Vote_log = train(Y_train, sparse(Yhat_train), ['-s 0', 'col']);
+Y_train_vote_log = predict(ones(4050, 1), sparse(Yhat_train),...
+    Vote_log, ['-q', 'col']);
+acc_train_vote = mean(Y_train_vote_est == Y_train);
+acc_train_vote_log = mean(Y_train_vote_log == Y_train);
 
 Yhat = [Yhat_logistic, Yhat_NB, Yhat_SVM_W, Yhat_boost, Yhat_log_gd,...
     Yhat_knn];
+Y_vote_log = predict(ones(450, 1), sparse(Yhat),...
+    Vote_log, ['-q', 'col']);
 Y_est = mode(Yhat, 2);
 acc_vote = mean(Y_est == Y_test);
-
+acc_vote_log = mean(Y_vote_log == Y_test);
 %% Train models with all the data
 % boost = fitcensemble(X_pca, Y, 'Method', 'LogitBoost',...
 %     'NumLearningCycles', 500, 'LearnRate', 0.69396);
