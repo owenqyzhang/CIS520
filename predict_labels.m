@@ -13,7 +13,7 @@ load ./models/ada_boost.mat
 
 X = full(word_counts);
 
-X_pca = (X - mean(X)) * coeff;
+X_pca = bsxfun(@minus, X, mean(X)) * coeff;
 
 Y_hat = predict(ada_compact, X_pca);
 
