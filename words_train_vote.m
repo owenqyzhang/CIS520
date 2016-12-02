@@ -2,33 +2,30 @@ clear
 clc
 
 load ./data/train_set/words_train.mat
+
+Yhat = predict_labels(X, [], [], [], [], []);
+acc = mean(Yhat == Y);
+
 X = full(X);
 Xh = [ones(4500, 1), X];
 % load ./data/train_set/train_cnn_feat.mat
 % X_cnn = train_cnn_feat;
 Y = full(Y);
-% load ./models/majority_vote_compact.mat
-% X_pca = bsxfun(@minus, X, mean(X)) * coeff;
 
 %% Randomly divide into training set and test set.
-ind = crossvalind('Kfold', 4500, 10);
-idx = 1: 4500;
-idx_test = find(ind == 1);
-idx_train = idx;
-idx_train(idx_test) = [];
+% ind = crossvalind('Kfold', 4500, 10);
+% idx = 1: 4500;
+% idx_test = find(ind == 1);
+% idx_train = idx;
+% idx_train(idx_test) = [];
 
-X_train = X(idx_train, :);
-% X_pca_train = X_pca(idx_train, :);
-Xh_train = [ones(4050, 1), X_train];
-% X_cnn_train = X_cnn(idx_train, :);
-Y_train = Y(idx_train);
+% X_train = X(idx_train, :);
+% Xh_train = [ones(4050, 1), X_train];
+% Y_train = Y(idx_train);
 
-
-X_test = X(idx_test, :);
-% X_pca_test = X_pca(idx_test, :);
-Xh_test = [ones(450, 1), X_test];
-% X_cnn_test = X_cnn(idx_test, :);
-Y_test = Y(idx_test);
+% X_test = X(idx_test, :);
+% Xh_test = [ones(450, 1), X_test];
+% Y_test = Y(idx_test);
 
 %% LogitBoost
 % boost = fitcensemble(X_pca_train, Y_train, 'Method', 'LogitBoost',...
@@ -122,18 +119,18 @@ Y_test = Y(idx_test);
 % boost = fitcensemble(X_pca, Y, 'Method', 'LogitBoost',...
 %     'NumLearningCycles', 500, 'LearnRate', 0.69396);
 
-KNN = fitcknn(Xh, Y, 'NumNeighbors', 18);
+% KNN = fitcknn(Xh, Y, 'NumNeighbors', 18);
 
-NB = fitcnb(Xh, Y, 'Distribution', 'mn');
+% NB = fitcnb(Xh, Y, 'Distribution', 'mn');
 
-SVM_W = fitcsvm(Xh, Y, 'KernelFunction', 'rbf',...
-    'Standardize', true, 'KernelScale', 100);
+% SVM_W = fitcsvm(Xh, Y, 'KernelFunction', 'rbf',...
+%     'Standardize', true, 'KernelScale', 100);
 
 % SVM_CNN = fitcsvm(X_cnn, Y, 'KernelFunction', 'rbf',...
 %     'Standardize', true, 'KernelScale', 250);
 
-addpath('liblinear/');
-logistic = train(Y, sparse(Xh), ['-s 7', 'col']);
+% addpath('liblinear/');
+% logistic = train(Y, sparse(Xh), ['-s 7', 'col']);
 
-initial_w = zeros(size(Xh, 2), 1);
-w = gradientDescent(Xh, Y, initial_w, 0.07, 1000, 2);
+% initial_w = zeros(size(Xh, 2), 1);
+% w = gradientDescent(Xh, Y, initial_w, 0.07, 1000, 2);
