@@ -13,7 +13,7 @@ load ./models/net_40.mat
 
 X = full(word_counts)';
 
-Y_hat = net(X)';
+Y_hat = net_opt(X)';
 Y_hat(Y_hat >= 0.5) = 1;
 Y_hat(Y_hat < 0.5) = 0;
 
