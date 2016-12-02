@@ -2,24 +2,34 @@ clear
 clc
 
 load ./data/train_set/words_train.mat
-X1 = full(X);
-load ./data/train_set_unlabeled/words_train_unlabeled.mat
-X2 = full(X);
-X = [X1; X2];
+X = full(X);
 
-unzip('./models.zip')
-load ./models/coeff.mat
-X1_pca = (X1 - mean(X1)) * coeff;
-X2_pca = (X2 - mean(X2)) * coeff;
 Y = full(Y);
 
+% Yhat = predict_labels(sparse(X), [], [], [], [], []);
+% acc = mean(Yhat == Y);
 %%
-% [coeff, score] = pca(X, 'NumComponents', 750);
+idx = 1: 4500;
+ind = crossvalind('Kfold', 4500, 10);
 
-%% AdaBoostM1
-% optimization = fitcensemble(X1_pca,Y,'OptimizeHyperparameters','all');
-% ada = fitcensemble(X1_pca, Y, 'Method', 'LogitBoost', 'NumLearningCycles', 500,...
-%     'LearnRate', 0.69396);
-% save('./models/ada.mat','ada','-v7.3')
-Yhat = predict_labels(sparse(X1), [], [], [], [], []);
-acc = mean(Yhat == Y);
+acc_train = 0;
+acc_test = 0;
+for i = 1: 10
+    ind_train = idx(ind == i);
+    ind_test = idx(ind ~= i);
+    
+    X_train = X(ind_train, :);
+    X_test = X(ind_test, :);
+    
+    Y_train = Y(ind_train);
+    Y_test = Y(ind_test);
+    
+    rb = fitensemble(X_train, Y_train, 'RobustBoost', 4000, 'Tree',...
+        'RobustErrorGoal', 0.15, 'RobustMaxMargin', 1);
+    
+    Yhat_train = predict(rb, X_train);
+    acc_train = acc_train + mean(Yhat_train == Y_train);
+    
+    Yhat_test = predict(rb, X_test);
+    acc_test = acc_test + mean(Yhat_test == Y_test);
+end
