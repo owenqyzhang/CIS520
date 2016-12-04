@@ -16,7 +16,7 @@ n = size(word_counts, 1);
 [~, ~, prob_estimates] = predict(ones(n, 1), sparse(word_counts), log_ori_full, ['-q', 'col']);
 
 Y_hat = zeros(4500, 1);
-[~, ind] = sort(prob_estimates);
+[~, ind] = sort(prob_estimates, 'descend');
 Y_hat(ind(1: 2500)) = 1;
 
 end
