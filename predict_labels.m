@@ -13,6 +13,10 @@ load ./models/log_ori_full.mat
 addpath('./liblinear/')
 
 n = size(word_counts, 1);
-Y_hat = predict(ones(n, 1), sparse(word_counts), log_ori_full, ['-q', 'col']);
+[~, ~, prob_estimates] = predict(ones(n, 1), sparse(word_counts), log_ori_full, ['-q', 'col']);
+
+Y_hat = zeros(4500, 1);
+[~, ind] = sort(prob_estimates);
+Y_hat(ind(1: 2500)) = 1;
 
 end
