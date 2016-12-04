@@ -18,8 +18,8 @@ ind_unlabeled_inlier = idx(abs(prob_estimates) > 1);
 X2_inlier = X2(ind_unlabeled_inlier, :);
 Y_unlabeled_inlier = y_unlabeled_est(ind_unlabeled_inlier);
 
-X = [X1; X2_inlier];
-Y = [full(Y); Y_unlabeled_inlier];
+X = [X1; X2];
+Y = [full(Y); y_unlabeled_est];
 
 log_ori_full = train(full(Y), sparse(X), ['-s 7', 'col']);
 save('./models/log_ori_full.mat', 'log_ori_full', '-v7.3');
