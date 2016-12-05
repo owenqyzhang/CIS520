@@ -9,20 +9,20 @@ X2 = full(X);
 %% Logistic Regression
 addpath('liblinear/');
 
-log_ori = train(full(Y), sparse(X1), ['-s 7', 'col']);
+log_ori = train(full(Y), sparse(X1), ['-s 0', 'col']);
 
-% [y_unlabeled_est, ~, prob_estimates] = predict(ones(4500, 1), sparse(X2), log_ori, ['-q', 'col']);
-% 
-% idx = 1: 4500;
-% ind_unlabeled_inlier = idx(abs(prob_estimates) > 1);
-% X2_inlier = X2(ind_unlabeled_inlier, :);
-% Y_unlabeled_inlier = y_unlabeled_est(ind_unlabeled_inlier);
-% 
-% X = [X1; X2];
-% Y = [full(Y); y_unlabeled_est];
-% 
-% log_ori_full = train(full(Y), sparse(X), ['-s 0', 'col']);
-% save('./models/log_ori_full.mat', 'log_ori_full', '-v7.3');
+[y_unlabeled_est, ~, prob_estimates] = predict(ones(4500, 1), sparse(X2), log_ori, ['-q', 'col']);
+
+idx = 1: 4500;
+ind_unlabeled_inlier = idx(abs(prob_estimates) > 1);
+X2_inlier = X2(ind_unlabeled_inlier, :);
+Y_unlabeled_inlier = y_unlabeled_est(ind_unlabeled_inlier);
+
+X = [X1; X2];
+Y = [full(Y); y_unlabeled_est];
+
+log_ori_full = train(full(Y), sparse(X), ['-s 0', 'col']);
+save('./models/log_ori_full.mat', 'log_ori_full', '-v7.3');
 
 % precision_ori_log = zeros(9, 1);
 % ind = crossvalind('Kfold', 4500, 10);
