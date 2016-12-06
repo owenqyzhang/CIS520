@@ -7,7 +7,7 @@ load ./data/train_set_unlabeled/words_train_unlabeled.mat
 X2 = full(X);
 
 %% Logistic Regression
-addpath('liblinear/');
+addpath('libsvm/');
 
 log_ori = train(full(Y), sparse(X1), ['-s 0', 'col']);
 
