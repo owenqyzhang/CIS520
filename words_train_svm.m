@@ -2,40 +2,58 @@ clear
 clc
 
 load ./data/train_set/words_train.mat
-X1 = full(X);
-load ./data/train_set_unlabeled/words_train_unlabeled.mat
-X2 = full(X);
+Y = full(Y);
 
 %% Logistic Regression
-addpath('libsvm/');
+% addpath('libsvm/');
 
-log_ori = train(full(Y), sparse(X1), ['-s 0', 'col']);
+% K = kernel_gaussian(X, X, 30);
+% svm = svmtrain(Y, [(1:size(K,1))' K], sprintf('-t 4 -c %g', 150));
 
-[y_unlabeled_est, ~, prob_estimates] = predict(ones(4500, 1), sparse(X2), log_ori, ['-q', 'col']);
+% idx = 1: 4500;
 
-idx = 1: 4500;
-ind_unlabeled_inlier = idx(abs(prob_estimates) > 1);
-X2_inlier = X2(ind_unlabeled_inlier, :);
-Y_unlabeled_inlier = y_unlabeled_est(ind_unlabeled_inlier);
-
-X = [X1; X2];
-Y = [full(Y); y_unlabeled_est];
-
-log_ori_full = train(full(Y), sparse(X), ['-s 0', 'col']);
-save('./models/log_ori_full.mat', 'log_ori_full', '-v7.3');
-
-% precision_ori_log = zeros(9, 1);
+% err_35_cv = 0;
+% err_25_cv = 0;
+% err_30_cv = 0;
+% err_40_cv = 0;
+% err_20_cv = 0;
 % ind = crossvalind('Kfold', 4500, 10);
 % for i = 1: 10
-%     idx = 1: 9000;
 %     idx_test = find(ind == i);
-%     idx_train = idx;
-%     idx_train(idx_test) = [];
+%     idx_train = find(ind ~= i);
 %     
-%     model = train(full(Y(idx_train)), sparse(X(idx_train, :)),...
-%         ['-s 0', 'col']);
-%     Yhat = predict(ones(450, 1), sparse(X(idx_test, :)),...
-%         model, ['-q', 'col']);
-%     precision_ori_log(i) = mean(Yhat == Y(idx_test));
+%     X_test = X(idx_test, :);
+%     X_train = X(idx_train, :);
+%     
+%     Y_test = Y(idx_test);
+%     Y_train = Y(idx_train);
+%     
+%     k_gauss_35 = @(x, x2) kernel_gaussian(x, x2, 35);
+%     [err_gauss_35, ~] = kernel_libsvm(X_train, Y_train, X_test, Y_test, k_gauss_35);
+%     
+%     k_gauss_25 = @(x, x2) kernel_gaussian(x, x2, 25);
+%     [err_gauss_25, ~] = kernel_libsvm(X_train, Y_train, X_test, Y_test, k_gauss_25);
+% 
+%     k_gauss_30 = @(x, x2) kernel_gaussian(x, x2, 30);
+%     [err_gauss_30, ~] = kernel_libsvm(X_train, Y_train, X_test, Y_test, k_gauss_30);
+% 
+%     k_gauss_40 = @(x, x2) kernel_gaussian(x, x2, 40);
+%     [err_gauss_40, ~] = kernel_libsvm(X_train, Y_train, X_test, Y_test, k_gauss_40);    
+% 
+%     k_gauss_20 = @(x, x2) kernel_gaussian(x, x2, 20);
+%     [err_gauss_20, ~] = kernel_libsvm(X_train, Y_train, X_test, Y_test, k_gauss_20);    
+% 
+%     err_35_cv = err_35_cv + err_gauss_35;
+%     err_25_cv = err_25_cv + err_gauss_25;
+%     err_30_cv = err_30_cv + err_gauss_30;
+%     err_40_cv = err_40_cv + err_gauss_40;
+%     err_20_cv = err_20_cv + err_gauss_20;
 % end
-% precision_ori_log_ave = mean(precision_ori_log);
+
+% err_35_cv = err_35_cv / 10;
+% err_25_cv = err_25_cv / 10;
+% err_30_cv = err_30_cv / 10;
+% err_40_cv = err_40_cv / 10;
+% err_20_cv = err_20_cv / 10;
+
+Yhat = predict_labels(X, [], [], [], [], []);
