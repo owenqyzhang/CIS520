@@ -1,4 +1,5 @@
-# CIS520
+CIS520
 Final project for CIS 520 Machine Learning
 
-Tweeter classification
+Tweets classification
+Different methods are in different branches
